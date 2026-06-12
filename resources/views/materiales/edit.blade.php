@@ -26,7 +26,14 @@
             </div>
             <div class="col-md-6 mb-2">
                 <label class="form-label-c">Unidad de Medida *</label>
-                <input type="text" class="form-control-c" name="unidad_medida" value="{{ old('unidad_medida', $material->unidad_medida) }}" required>
+                <select class="form-select-c" name="id_unidad" required>
+                    <option value="">Seleccionar unidad</option>
+                    @foreach($unidades as $u)
+                        <option value="{{ $u->id_unidad }}" {{ old('id_unidad', $material->id_unidad) == $u->id_unidad ? 'selected' : '' }}>
+                            {{ $u->nombre_unidad }} ({{ $u->abreviatura }})
+                        </option>
+                    @endforeach
+                </select>
             </div>
             <div class="col-md-6 mb-2">
                 <label class="form-label-c">Descripción</label>

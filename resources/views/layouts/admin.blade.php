@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'SERVIMETAL - Sistema de Gestión')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -82,6 +83,22 @@
             border-left-color: #0d6efd;
         }
         .sidebar-nav i { width: 18px; text-align: center; }
+
+        /* Submenú */
+        .sidebar-submenu .submenu-toggle { display: flex; align-items: center; cursor: pointer; }
+        .sidebar-submenu .submenu-arrow { transition: transform .2s; }
+        .sidebar-submenu.open .submenu-arrow { transform: rotate(180deg); }
+        .submenu-list { list-style: none; padding: 0; margin: 0; }
+        .submenu-list a {
+            display: flex; align-items: center; gap: .8rem;
+            padding: .6rem 1.2rem .6rem 2.8rem;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none; font-size: .85rem;
+            border-left: 3px solid transparent;
+            transition: background .15s;
+        }
+        .submenu-list a:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .submenu-list a.active { background: rgba(13,110,253,0.12); color: #fff; border-left-color: #0d6efd; }
 
         /* Main */
         .main-content {
@@ -274,6 +291,30 @@
                         <i class="fas fa-chart-bar"></i> Reportes
                     </a>
                 </li>
+
+                <!-- Mantenimiento (desplegable) -->
+                @php
+                    $maintRoute = request()->routeIs('categorias.*') || request()->routeIs('unidades.*');
+                @endphp
+                <li class="sidebar-submenu">
+                    <a href="#" class="submenu-toggle {{ $maintRoute ? 'active' : '' }}" onclick="toggleMaint(event)">
+                        <i class="fas fa-wrench"></i> Mantenimiento
+                        <i class="fas fa-chevron-down ms-auto submenu-arrow" id="maintArrow" style="font-size:.7rem;"></i>
+                    </a>
+                    <ul class="submenu-list" id="maintSubmenu" @if(!$maintRoute) style="display:none;" @endif>
+                        <li>
+                            <a href="{{ route('categorias.index') }}" class="{{ request()->routeIs('categorias.*') ? 'active' : '' }}">
+                                <i class="fas fa-tags"></i> Categorías
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('unidades.index') }}" class="{{ request()->routeIs('unidades.*') ? 'active' : '' }}">
+                                <i class="fas fa-ruler"></i> Unidades de medida
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
                 <li>
                     <a href="{{ route('usuarios.index') }}" class="{{ request()->routeIs('usuarios.*') ? 'active' : '' }}">
                         <i class="fas fa-users-cog"></i> Usuarios
@@ -296,10 +337,23 @@
                     </button>
                 </div>
                 <div class="right">
-                    <button class="icon-btn" title="Notificaciones">
-                        <i class="fas fa-bell"></i>
-                        <span class="dot">3</span>
-                    </button>
+                    <div class="dropdown">
+                        <button class="icon-btn notification-toggle" title="Notificaciones" data-bs-toggle="dropdown">
+                            <i class="fas fa-bell"></i>
+                            <span class="dot" id="notificationBadge" style="display: none;"></span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end notification-dropdown" style="width: 360px; max-height: 400px; overflow-y: auto;">
+                            <div class="dropdown-header d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">Notificaciones</h6>
+                                <button class="btn btn-sm btn-link p-0" id="markAllReadBtn" style="display: none;">Marcar todas como leídas</button>
+                            </div>
+                            <div id="notificationList" class="notification-list">
+                                <div class="text-center text-muted py-4">Cargando...</div>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item text-center text-primary" href="#" id="viewAllNotifications">Ver todas</a>
+                        </div>
+                    </div>
                     @php
                         $sessionUser = null;
                         if (Session::has('usuario_id')) {
@@ -405,7 +459,183 @@
                 if (e.key === 'Escape' && mqMobile.matches) closeMobile();
             });
         })();
-    </script>
+
+        function toggleMaint(e) {
+            if (e) e.preventDefault();
+            const sub = document.getElementById('maintSubmenu');
+            if (!sub) return;
+            const li  = sub.closest('.sidebar-submenu');
+            const isHidden = sub.style.display === 'none' || window.getComputedStyle(sub).display === 'none';
+            if (isHidden) {
+                sub.style.display = 'block';
+                li?.classList.add('open');
+            } else {
+                sub.style.display = 'none';
+                li?.classList.remove('open');
+            }
+        }
+
+        // ===== NOTIFICACIONES =====
+        const notificationToggle = document.querySelector('.notification-toggle');
+        const notificationList = document.getElementById('notificationList');
+        const notificationBadge = document.getElementById('notificationBadge');
+        const markAllReadBtn = document.getElementById('markAllReadBtn');
+        const viewAllNotifications = document.getElementById('viewAllNotifications');
+
+        let notificationInterval;
+
+        function fetchNotifications() {
+            fetch('{{ route('notificaciones.index') }}?solo_no_leidas=true')
+                .then(response => response.json())
+                .then(data => {
+                    updateNotificationUI(data);
+                    if (data.no_leidas_count > 0) {
+                        notificationBadge.textContent = data.no_leidas_count;
+                        notificationBadge.style.display = 'inline-block';
+                        markAllReadBtn.style.display = 'inline';
+                    } else {
+                        notificationBadge.style.display = 'none';
+                        markAllReadBtn.style.display = 'none';
+                    }
+
+                    data.notificaciones.forEach(notif => {
+                        if (!notif.leida) {
+                            const nuevo = new NotificationApi({
+                                title: notif.titulo,
+                                body: notif.mensaje,
+                                icon: '{{ asset('storage/app/public/favicon.png') }}',
+                                tag: 'stock-alert-' + notif.id_notificacion,
+                                data: {
+                                    url: null
+                                },
+                                requireInteraction: true,
+                                silent: true
+                            });
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching notifications:', error);
+                    notificationList.innerHTML = '<div class="text-center text-muted py-4">Error al cargar notificaciones</div>';
+                });
+        }
+
+        function updateNotificationUI(data) {
+            if (data.notificaciones.length === 0) {
+                notificationList.innerHTML = '<div class="text-center text-muted py-4">No hay notificaciones</div>';
+                return;
+            }
+
+            notificationList.innerHTML = '';
+            data.notificaciones.forEach(notif => {
+                const item = document.createElement('a');
+                item.className = 'dropdown-item ' + (notif.leida ? 'text-muted' : 'fw-bold');
+                item.href = '#';
+
+                const iconClass = notif.tipo === 'stock_bajo' ? 'text-warning' :
+                                 notif.tipo === 'nueva_solicitud' ? 'text-info' :
+                                 notif.tipo === 'entrada_registrada' ? 'text-success' : 'text-primary';
+
+                item.innerHTML = `
+                    <div class="d-flex align-items-start">
+                        <i class="fas fa-circle ${iconClass} me-2 mt-1" style="font-size: 0.6rem;"></i>
+                        <div class="flex-grow-1">
+                            <div class="small ${notif.leida ? 'text-muted' : ''}">${notif.titulo}</div>
+                            <div class="small text-muted">${notif.mensaje}</div>
+                            <div class="small text-muted">${notif.created_at ? new Date(notif.created_at).toLocaleString() : ''}</div>
+                        </div>
+                    </div>
+                `;
+
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (!notif.leida) {
+                        fetch(`{{ route('notificaciones.marcarLeida', ['notificacion' => ':id']) }}`.replace(':id', notif.id_notificacion), {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(() => {
+                            fetchNotifications();
+                        });
+                    }
+                });
+
+                notificationList.appendChild(item);
+            });
+        }
+
+        function checkLowStockAndCreateNotifications() {
+            fetch('/api/check-low-stock')
+                .then(response => response.json())
+                .then(data => {})
+                .catch(() => {});
+        }
+
+        if (notificationToggle) {
+            notificationToggle.addEventListener('click', function(e) {
+                if (!notificationList.classList.contains('show')) {
+                    fetchNotifications();
+                }
+            });
+        }
+
+        if (markAllReadBtn) {
+            markAllReadBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                fetch('{{ route('notificaciones.todas-leidas') }}', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                    }
+                })
+                .then(response => response.json())
+                .then(() => {
+                    fetchNotifications();
+                })
+                .catch(error => {
+                    console.error('Error marking all as read:', error);
+                });
+            });
+        }
+
+        if (viewAllNotifications) {
+            viewAllNotifications.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = '{{ route('materiales.index') }}#alertas';
+            });
+        }
+
+        if (notificationToggle && !notificationToggle.closest('a')) {
+            const dropdown = notificationToggle.closest('.dropdown');
+            if (dropdown) {
+                dropdown.addEventListener('show.bs.dropdown', function() {
+                    fetchNotifications();
+                    if (notificationInterval) {
+                        clearInterval(notificationInterval);
+                    }
+                    notificationInterval = setInterval(fetchNotifications, 60000);
+                });
+
+                dropdown.addEventListener('hide.bs.dropdown', function() {
+                    if (notificationInterval) {
+                        clearInterval(notificationInterval);
+                    }
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchNotifications();
+            checkLowStockAndCreateNotifications();
+            notificationInterval = setInterval(fetchNotifications, 60000);
+            notificationInterval = setInterval(checkLowStockAndCreateNotifications, 300000);
+        });
+</script>
     @yield('js')
 </body>
 </html>

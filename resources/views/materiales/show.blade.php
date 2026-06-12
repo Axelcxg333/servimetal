@@ -1,69 +1,66 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
-@section('title', 'Ver Material - SERVIMETAL')
+@section('title', 'Detalle del Material')
 
 @section('content')
-<div class="d-flex justify-content-between mb-4">
-    <h1>Detalle del Material</h1>
-    <div>
-        <a href="{{ route('materiales.edit', $material->id_material) }}" class="btn btn-warning"><i class="fas fa-edit"></i> Editar</a>
-        <a href="{{ route('materiales.index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Volver</a>
+<div class="d-flex justify-content-between align-items-center mb-1">
+    <h1 class="page-title">Detalle del Material</h1>
+    <div class="d-flex gap-2">
+        <a href="{{ route('materiales.edit', $material->id_material) }}" class="btn-c-primary"><i class="fas fa-pen me-1"></i> Editar</a>
+        <a href="{{ route('materiales.index') }}" class="btn-c-light"><i class="fas fa-arrow-left me-1"></i> Volver</a>
     </div>
 </div>
+<div class="breadcrumb-c mb-4"><a href="{{ route('materiales.index') }}">Materiales</a> <span class="mx-1">›</span> <span class="active">Detalle</span></div>
 
-<div class="row">
+<div class="row g-3">
     <div class="col-md-6">
-        <div class="card mb-3">
-            <div class="card-header">Información General</div>
-            <div class="card-body">
-                <p><strong>Categoría:</strong> {{ $material->categoria->nombre_categoria }}</p>
-                <p><strong>Nombre:</strong> {{ $material->nombre_material }}</p>
-                <p><strong>Unidad:</strong> {{ $material->unidad_medida }}</p>
-                <p><strong>Ubicación:</strong> {{ $material->ubicacion ?? '-' }}</p>
-                <p><strong>Estado:</strong> <span class="badge {{ $material->estado === 'ACTIVO' ? 'bg-success' : 'bg-danger' }}">{{ $material->estado }}</span></p>
+        <div class="card-c">
+            <h6 class="fw-bold mb-3">Información General</h6>
+            <div class="row g-2">
+                <div class="col-6"><div class="form-label-c">Categoría</div><div>{{ $material->categoria->nombre_categoria }}</div></div>
+                <div class="col-6"><div class="form-label-c">Nombre</div><div>{{ $material->nombre_material }}</div></div>
+                <div class="col-6"><div class="form-label-c">Unidad</div><div>{{ $material->unidad->nombre_unidad ?? '-' }}</div></div>
+                <div class="col-6"><div class="form-label-c">Ubicación</div><div>{{ $material->ubicacion ?? '-' }}</div></div>
+                <div class="col-6"><div class="form-label-c">Estado</div><div><span class="{{ $material->estado === 'ACTIVO' ? 'badge-soft-success' : 'badge-soft-danger' }}">{{ $material->estado }}</span></div></div>
             </div>
         </div>
     </div>
     <div class="col-md-6">
-        <div class="card mb-3">
-            <div class="card-header">Stock e Inventario</div>
-            <div class="card-body">
-                <p><strong>Stock Actual:</strong> <span class="badge bg-info">{{ $material->stock_actual }}</span></p>
-                <p><strong>Stock Mínimo:</strong> {{ $material->stock_minimo }}</p>
-                <p><strong>Precio Unitario:</strong> S/ {{ number_format($material->precio_unitario, 2) }}</p>
-                <p><strong>Valor Total:</strong> S/ {{ number_format($material->stock_actual * $material->precio_unitario, 2) }}</p>
+        <div class="card-c">
+            <h6 class="fw-bold mb-3">Stock e Inventario</h6>
+            <div class="row g-2">
+                <div class="col-6"><div class="form-label-c">Stock Actual</div><div><strong>{{ $material->stock_actual }}</strong></div></div>
+                <div class="col-6"><div class="form-label-c">Stock Mínimo</div><div>{{ $material->stock_minimo }}</div></div>
+                <div class="col-6"><div class="form-label-c">Precio Unitario</div><div>S/ {{ number_format($material->precio_unitario, 2) }}</div></div>
+                <div class="col-6"><div class="form-label-c">Valor Total</div><div>S/ {{ number_format($material->stock_actual * $material->precio_unitario, 2) }}</div></div>
             </div>
         </div>
     </div>
-</div>
 
-@if($material->movimientos->count() > 0)
-<div class="card">
-    <div class="card-header">Últimos Movimientos</div>
-    <div class="table-responsive">
-        <table class="table table-sm mb-0">
-            <thead class="table-light">
-                <tr>
-                    <th>Fecha</th>
-                    <th>Tipo</th>
-                    <th>Cantidad</th>
-                    <th>Usuario</th>
-                    <th>Motivo</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($material->movimientos->take(10) as $mov)
-                <tr>
-                    <td>{{ $mov->fecha_movimiento->format('d/m/Y H:i') }}</td>
-                    <td><span class="badge {{ $mov->tipo_movimiento === 'ENTRADA' ? 'bg-success' : 'bg-danger' }}">{{ $mov->tipo_movimiento }}</span></td>
-                    <td>{{ $mov->cantidad }}</td>
-                    <td>{{ $mov->usuario->nombres }}</td>
-                    <td>{{ $mov->motivo ?? '-' }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+    @if($material->movimientos->count() > 0)
+    <div class="col-12">
+        <div class="card-c">
+            <h6 class="fw-bold mb-3">Últimos Movimientos</h6>
+            <div class="table-responsive">
+                <table class="table-c">
+                    <thead>
+                        <tr><th>Fecha</th><th>Tipo</th><th>Cantidad</th><th>Usuario</th><th>Motivo</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach($material->movimientos->take(10) as $mov)
+                        <tr>
+                            <td>{{ $mov->fecha_movimiento->format('d/m/Y H:i') }}</td>
+                            <td><span class="{{ $mov->tipo_movimiento === 'ENTRADA' ? 'badge-soft-success' : 'badge-soft-warning' }}">{{ $mov->tipo_movimiento }}</span></td>
+                            <td>{{ $mov->cantidad }}</td>
+                            <td>{{ $mov->usuario->nombres }}</td>
+                            <td>{{ $mov->motivo ?? '-' }}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
+    @endif
 </div>
-@endif
 @endsection

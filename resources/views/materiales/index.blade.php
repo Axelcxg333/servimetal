@@ -49,7 +49,14 @@
 
                     <div class="col-md-6">
                         <label class="form-label-c">Unidad de medida *</label>
-                        <input type="text" name="unidad_medida" class="form-control-c" placeholder="Seleccione unidad" value="{{ old('unidad_medida') }}" required>
+                        <select name="id_unidad" class="form-select-c" required>
+                            <option value="">Seleccionar unidad</option>
+                            @foreach($unidades as $u)
+                                <option value="{{ $u->id_unidad }}" {{ old('id_unidad') == $u->id_unidad ? 'selected' : '' }}>
+                                    {{ $u->nombre_unidad }} ({{ $u->abreviatura }})
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
 
                     <div class="col-12">
@@ -119,7 +126,7 @@
                                 <td>MAT-{{ str_pad($m->id_material, 4, '0', STR_PAD_LEFT) }}</td>
                                 <td>{{ $m->nombre_material }}</td>
                                 <td>{{ $m->categoria->nombre_categoria ?? '-' }}</td>
-                                <td>{{ strtolower($m->unidad_medida) }}</td>
+                                <td>{{ $m->unidad->nombre_unidad ?? '-' }}</td>
                                 <td><strong>{{ $m->stock_actual }}</strong></td>
                                 <td><span class="{{ $cls }}">{{ $estado }}</span></td>
                                 <td>

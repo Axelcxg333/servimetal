@@ -106,7 +106,7 @@
                         <td>{{ $m->nombre_material }}</td>
                         <td>{{ $m->categoria->nombre_categoria ?? 'Sin categoría' }}</td>
                         <td><strong>{{ $m->stock_actual }}</strong></td>
-                        <td>{{ strtolower($m->unidad_medida) }}</td>
+                        <td>{{ $m->unidad->nombre_unidad ?? '-' }}</td>
                         <td><span class="{{ $cls }}">{{ $estado }}</span></td>
                     </tr>
                 @empty

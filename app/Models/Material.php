@@ -14,8 +14,8 @@ class Material extends Model
 
     protected $fillable = [
         'id_categoria',
+        'id_unidad',
         'nombre_material',
-        'unidad_medida',
         'descripcion',
         'stock_actual',
         'stock_minimo',
@@ -25,14 +25,19 @@ class Material extends Model
     ];
 
     protected $casts = [
-        'stock_actual' => 'decimal:2',
-        'stock_minimo' => 'decimal:2',
+        'stock_actual'    => 'decimal:2',
+        'stock_minimo'    => 'decimal:2',
         'precio_unitario' => 'decimal:2',
     ];
 
     public function categoria(): BelongsTo
     {
         return $this->belongsTo(CategoriaMaterial::class, 'id_categoria', 'id_categoria');
+    }
+
+    public function unidad(): BelongsTo
+    {
+        return $this->belongsTo(UnidadMedida::class, 'id_unidad', 'id_unidad');
     }
 
     public function movimientos(): HasMany

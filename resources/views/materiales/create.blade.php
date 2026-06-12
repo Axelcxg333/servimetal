@@ -27,8 +27,15 @@
             </div>
             <div class="col-md-6 mb-2">
                 <label class="form-label-c">Unidad de Medida *</label>
-                <input type="text" class="form-control-c @error('unidad_medida') is-invalid @enderror" name="unidad_medida" value="{{ old('unidad_medida') }}" required placeholder="kg, lt, und">
-                @error('unidad_medida') <small class="text-danger">{{ $message }}</small> @enderror
+                <select class="form-select-c @error('id_unidad') is-invalid @enderror" name="id_unidad" required>
+                    <option value="">Seleccionar unidad</option>
+                    @foreach($unidades as $u)
+                        <option value="{{ $u->id_unidad }}" {{ old('id_unidad') == $u->id_unidad ? 'selected' : '' }}>
+                            {{ $u->nombre_unidad }} ({{ $u->abreviatura }})
+                        </option>
+                    @endforeach
+                </select>
+                @error('id_unidad') <small class="text-danger">{{ $message }}</small> @enderror
             </div>
             <div class="col-md-6 mb-2">
                 <label class="form-label-c">Descripción</label>

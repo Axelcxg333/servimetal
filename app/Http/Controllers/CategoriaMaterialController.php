@@ -9,20 +9,17 @@ class CategoriaMaterialController extends Controller
 {
     public function index()
     {
-        $categorias = CategoriaMaterial::with('materiales')->get();
+        $categorias = CategoriaMaterial::withCount('materiales')
+            ->orderByDesc('id_categoria')
+            ->paginate(10);
         return view('categorias.index', compact('categorias'));
-    }
-
-    public function create()
-    {
-        return view('categorias.create');
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'nombre_categoria' => 'required|string|max:100|unique:categoria_material',
-            'descripcion' => 'nullable|string',
+            'descripcion'      => 'nullable|string|max:500',
         ]);
 
         CategoriaMaterial::create($request->all());
@@ -30,16 +27,13 @@ class CategoriaMaterialController extends Controller
         return redirect()->route('categorias.index')->with('success', 'Categoría creada correctamente');
     }
 
-    public function show(string $id)
-    {
-        $categoria = CategoriaMaterial::with('materiales')->findOrFail($id);
-        return view('categorias.show', compact('categoria'));
-    }
-
     public function edit(string $id)
     {
-        $categoria = CategoriaMaterial::findOrFail($id);
-        return view('categorias.edit', compact('categoria'));
+        $categoria  = CategoriaMaterial::withCount('materiales')->findOrFail($id);
+        $categorias = CategoriaMaterial::withCount('materiales')
+            ->orderByDesc('id_categoria')
+            ->paginate(10);
+        return view('categorias.index', compact('categoria', 'categorias'));
     }
 
     public function update(Request $request, string $id)
@@ -48,7 +42,7 @@ class CategoriaMaterialController extends Controller
 
         $request->validate([
             'nombre_categoria' => 'required|string|max:100|unique:categoria_material,nombre_categoria,' . $id . ',id_categoria',
-            'descripcion' => 'nullable|string',
+            'descripcion'      => 'nullable|string|max:500',
         ]);
 
         $categoria->update($request->all());
@@ -59,7 +53,7 @@ class CategoriaMaterialController extends Controller
     public function destroy(string $id)
     {
         $categoria = CategoriaMaterial::findOrFail($id);
-        
+
         if ($categoria->materiales()->exists()) {
             return redirect()->route('categorias.index')->with('error', 'No puede eliminar una categoría que tiene materiales asociados');
         }
