@@ -8,20 +8,32 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
-            background: #f0f4f8 url('https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=1600') center/cover no-repeat;
+            margin: 0;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             position: relative;
         }
 
-        body::before {
+        i {
+            color: #012555;
+        }
+
+        .page-content {
+            min-height: calc(100vh - 80px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #f0f4f8 url('../images/login-background.webp') center/cover no-repeat;
+            position: relative;
+        }
+
+        .page-content::before {
             content: "";
             position: absolute;
             inset: 0;
             background: rgba(240, 244, 248, 0.75);
+            z-index: 0;
         }
 
         .login-wrapper {
@@ -49,33 +61,12 @@
 
         .brand-block {
             text-align: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .brand-block .logo-icon {
-            font-size: 2.2rem;
-            color: #0d6efd;
-            margin-bottom: 0.25rem;
-        }
-
-        .brand-block .brand-name {
-            color: #0d6efd;
-            font-size: 1.5rem;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-            line-height: 1;
-        }
-
-        .brand-block .brand-sub {
-            color: #6b7280;
-            font-size: 0.85rem;
-            letter-spacing: 3px;
-            margin-top: 0.15rem;
+            margin-bottom: 1rem;
         }
 
         .welcome-title {
             text-align: center;
-            color: #0d6efd;
+            color: #012555;
             font-weight: 700;
             margin-bottom: 0.25rem;
         }
@@ -105,11 +96,11 @@
 
         .input-group:focus-within .form-control,
         .input-group:focus-within .input-group-text {
-            border-color: #0d6efd;
+            border-color: #012555;
         }
 
         .btn-login {
-            background: #0d6efd;
+            background: #013d8b;
             border: none;
             border-radius: 8px;
             padding: 0.7rem;
@@ -120,7 +111,8 @@
         }
 
         .btn-login:hover {
-            background: #0b5ed7;
+            background: #012555;
+            color: #fff;
         }
 
         .forgot {
@@ -138,65 +130,71 @@
             text-decoration: underline;
         }
 
-        .login-footer {
-            background: #0d6efd;
-            color: #fff;
-            text-align: center;
-            padding: 0.85rem 1rem;
-            font-size: 0.85rem;
-            border-radius: 0 0 14px 14px;
-            margin: 1.75rem -2rem -2rem;
+        footer {
+            background-color: #012555;
+            color: white;
+            padding: 1.5rem 0;
+            width: 100%;
         }
     </style>
 </head>
 <body>
-    <div class="login-wrapper">
-        <h1 class="login-title">Inicio de sesión</h1>
-        <div class="login-card">
-            <div class="brand-block">
-                <div class="logo-icon"><i class="fas fa-cog"></i></div>
-                <div class="brand-name">SERVIMETAL</div>
-                <div class="brand-sub">A &amp; M S.A.C.</div>
-            </div>
+    <div class="container-fluid p-0">
 
-            <h2 class="welcome-title h5">Bienvenido</h2>
-            <p class="welcome-sub">Ingrese sus credenciales para acceder al sistema.</p>
-
-            <form action="{{ route('login.attempt') }}" method="POST">
-                @csrf
-
-                @if ($errors->any())
-                    <div class="alert alert-danger py-2 small" role="alert">
-                        <i class="fas fa-exclamation-circle"></i> {{ $errors->first() }}
+        <div class="page-content">
+            <div class="login-wrapper">
+                <h1 class="login-title">Inicio de sesión</h1>
+                <div class="login-card">
+                    <div class="brand-block">
+                        <img src="{{ asset('assets/icons/logo2.webp') }}" alt="Logo" class="img-fluid" style="height: 100px; margin-right: 10px;">
                     </div>
-                @endif
 
-                <div class="input-group mb-3">
-                    <span class="input-group-text"><i class="fas fa-user"></i></span>
-                    <input type="text" id="usuario" name="usuario" class="form-control"
-                           placeholder="Usuario" required autofocus>
+                    <h2 class="welcome-title h5">Bienvenido</h2>
+                    <p class="welcome-sub">Ingrese sus credenciales para acceder al sistema.</p>
+
+                    <form action="{{ route('login.attempt') }}" method="POST">
+                        @csrf
+
+                        @if ($errors->any())
+                            <div class="alert alert-danger py-2 small" role="alert">
+                                <i class="fas fa-exclamation-circle"></i> {{ $errors->first() }}
+                            </div>
+                        @endif
+
+                        <div class="input-group mb-3">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                            <input type="text" id="usuario" name="usuario" class="form-control"
+                                placeholder="Usuario" required autofocus>
+                        </div>
+
+                        <div class="input-group mb-3">
+                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                            <input type="password" id="contrasena" name="contrasena" class="form-control"
+                                placeholder="Contraseña" required>
+                            <span class="input-group-text" style="border-left:0; cursor:pointer;" onclick="togglePassword()">
+                                <i class="fas fa-eye" id="eyeIcon"></i>
+                            </span>
+                        </div>
+
+                        <button type="submit" class="btn btn-login">Iniciar sesión</button>
+
+                        <div class="forgot">
+                            <a href="#">¿Olvidó su contraseña?</a>
+                        </div>
+                    </form>
                 </div>
-
-                <div class="input-group mb-3">
-                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                    <input type="password" id="contrasena" name="contrasena" class="form-control"
-                           placeholder="Contraseña" required>
-                    <span class="input-group-text" style="border-left:0; cursor:pointer;" onclick="togglePassword()">
-                        <i class="fas fa-eye" id="eyeIcon"></i>
-                    </span>
-                </div>
-
-                <button type="submit" class="btn btn-login">Iniciar sesión</button>
-
-                <div class="forgot">
-                    <a href="#">¿Olvidó su contraseña?</a>
-                </div>
-
-                <div class="login-footer">
-                    © 2024 Servimetal A &amp; M S.A.C. - Todos los derechos reservados
-                </div>
-            </form>
+            </div>
         </div>
+
+        <!-- Footer -->
+        <footer class="">
+            <div class="container">
+                    <div class="text-center">
+                    <p>&copy; 2024 Servimetal A&M S.A.C. - Todos los derechos reservados</p>
+                </div>
+            </div>
+        </footer>
+
     </div>
 
     <script>
@@ -214,4 +212,5 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

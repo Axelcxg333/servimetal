@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --color-primary: #003d7a;
-            --color-secondary: #0056b3;
+            --color-primary: #012555;
+            --color-secondary: #093778;
             --color-accent: #007bff;
         }
 
@@ -90,7 +90,7 @@
         footer {
             background-color: var(--color-primary);
             color: white;
-            padding: 3rem 0 1rem;
+            padding: 2rem 0 1rem;
         }
 
         footer a {
@@ -165,7 +165,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ route('corporativo.inicio') }}">
-                <i class="fas fa-industry"></i> SERVIMETAL
+                <img src="{{ asset('assets/icons/logo.png') }}" alt="Logo" class="img-fluid" style="height: 60px; margin-right: 10px;">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -199,11 +199,12 @@
     @yield('content')
 
     <!-- Footer -->
-    <footer>
+    <footer class="">
         <div class="container">
+            {{--
             <div class="row mb-4">
                 <div class="col-md-3">
-                    <h5><i class="fas fa-industry"></i> SERVIMETAL</h5>
+                    <img src="{{ asset('assets/icons/logo.png') }}" alt="Logo" class="img-fluid">
                     <p class="text-muted">Soluciones integrales en metalmecánica con calidad y compromiso.</p>
                 </div>
                 <div class="col-md-3">
@@ -231,8 +232,8 @@
                     </p>
                 </div>
             </div>
-            <hr>
-            <div class="text-center text-muted">
+            <hr>--}}
+            <div class="text-center">
                 <p>&copy; 2024 Servimetal A&M S.A.C. - Todos los derechos reservados</p>
             </div>
         </div>
