@@ -17,16 +17,22 @@
                 <div class="row g-2">
                     <div class="col-12">
                         <label class="form-label-c">Material *</label>
-                        <select name="id_material" class="form-select-c" required>
-                            <option value="">Seleccionar material</option>
-                            @foreach($materiales as $m)
-                                <option value="{{ $m->id_material }}">{{ $m->nombre_material }} (Stock: {{ $m->stock_actual }})</option>
-                            @endforeach
-                        </select>
+                        <div class="d-flex align-items-center gap-2">
+                            <select name="id_material" class="form-select-c flex-grow-1" id="materialSelect" required>
+                                <option value="">Seleccionar material</option>
+                                @foreach($materiales as $m)
+                                    <option value="{{ $m->id_material }}" data-stock="{{ $m->stock_actual }}" data-min="{{ $m->stock_minimo }}">{{ $m->nombre_material }}</option>
+                                @endforeach
+                            </select>
+                            <span id="stockBadge" class="d-none" style="padding:.25rem .6rem;border-radius:20px;font-size:.8rem;font-weight:600;white-space:nowrap;">
+                                Stock: <span id="stockValue">0</span>
+                            </span>
+                        </div>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label-c">Cantidad *</label>
-                        <input type="number" step="0.01" min="0.01" name="cantidad" class="form-control-c" required>
+                        <input type="number" step="0.01" min="0.01" name="cantidad" id="cantidadInput" class="form-control-c" required>
+                        <small class="text-danger d-none" id="stockError">Supera el stock disponible</small>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label-c">Fecha *</label>
@@ -91,4 +97,58 @@
         </div>
     </div>
 </div>
+
+@if($errors->has('cantidad'))
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index:9999">
+    <div class="alert alert-danger alert-dismissible fade show mb-0">{{ $errors->first('cantidad') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+</div>
+@endif
+@endsection
+
+@section('js')
+<script>
+(function() {
+    const select = document.getElementById('materialSelect');
+    const stockBadge = document.getElementById('stockBadge');
+    const stockValue = document.getElementById('stockValue');
+    const cantidad = document.getElementById('cantidadInput');
+    const stockError = document.getElementById('stockError');
+
+    function getStockColor(stock, min) {
+        if (stock <= 0) return { bg: '#fde8e8', text: '#b91c1c', label: 'Crítico' };
+        if (stock <= min) return { bg: '#fff3cd', text: '#856404', label: 'Por Stock' };
+        return { bg: '#d1fae5', text: '#065f46', label: 'Disponible' };
+    }
+
+    function updateStock() {
+        const opt = select.options[select.selectedIndex];
+        if (opt && opt.dataset.stock !== undefined) {
+            const stock = parseFloat(opt.dataset.stock);
+            const min = parseFloat(opt.dataset.min) || 0;
+            const color = getStockColor(stock, min);
+            stockValue.textContent = stock;
+            stockBadge.classList.remove('d-none');
+            stockBadge.style.background = color.bg;
+            stockBadge.style.color = color.text;
+            stockBadge.title = color.label;
+            cantidad.max = stock;
+            stockError.classList.toggle('d-none', !cantidad.value || parseFloat(cantidad.value) <= stock);
+        } else {
+            stockBadge.classList.add('d-none');
+            cantidad.removeAttribute('max');
+            stockError.classList.add('d-none');
+        }
+    }
+
+    select.addEventListener('change', updateStock);
+    cantidad.addEventListener('input', function() {
+        const opt = select.options[select.selectedIndex];
+        if (opt && opt.dataset.stock) {
+            const stock = parseFloat(opt.dataset.stock);
+            stockError.classList.toggle('d-none', !this.value || parseFloat(this.value) <= stock);
+        }
+    });
+    updateStock();
+})();
+</script>
 @endsection

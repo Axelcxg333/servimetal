@@ -46,7 +46,7 @@
                         <td>
                             <a href="{{ route('usuarios.show', $u->id_usuario) }}" class="text-info me-2" title="Ver"><i class="fas fa-eye"></i></a>
                             <a href="{{ route('usuarios.edit', $u->id_usuario) }}" class="text-primary me-2" title="Editar"><i class="fas fa-pen"></i></a>
-                            <form action="{{ route('usuarios.destroy', $u->id_usuario) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Eliminar usuario?')">
+                            <form action="{{ route('usuarios.destroy', $u->id_usuario) }}" method="POST" class="d-inline" data-confirm="¿Eliminar usuario?">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="btn btn-link p-0 text-danger" title="Eliminar"><i class="fas fa-trash"></i></button>
                             </form>

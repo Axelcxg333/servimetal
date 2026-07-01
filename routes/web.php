@@ -64,6 +64,8 @@ Route::resource('unidades', UnidadMedidaController::class)->except(['create', 's
 
 // ========== NOTIFICACIONES ==========
 Route::get('/notificaciones', [NotificacionController::class, 'index'])->name('notificaciones.index');
+Route::get('/notificaciones/panel', [NotificacionController::class, 'indexView'])->name('notificaciones.panel');
 Route::put('/notificaciones/{notificacion}/leida', [NotificacionController::class, 'marcarLeida'])->name('notificaciones.marcarLeida');
 Route::put('/notificaciones/todas-leidas', [NotificacionController::class, 'marcarTodasLeidas'])->name('notificaciones.todas-leidas');
+Route::delete('/notificaciones/{notificacion}', [NotificacionController::class, 'eliminar'])->name('notificaciones.eliminar');
 Route::get('/api/check-low-stock', [NotificationApiController::class, 'checkLowStock'])->name('api.check-low-stock');

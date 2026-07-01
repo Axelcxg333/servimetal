@@ -39,6 +39,8 @@ class EntradaController extends Controller
         $material->stock_actual = $material->stock_actual + $data['cantidad'];
         $material->save();
 
+        $material->notificarSiStockBajo();
+
         return redirect()->route('entradas.index')->with('success', 'Entrada registrada correctamente');
     }
 }

@@ -38,10 +38,10 @@
                             <a href="{{ route('clientes.edit', $cliente->id_cliente) }}" class="btn btn-sm btn-warning">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <form action="{{ route('clientes.destroy', $cliente->id_cliente) }}" method="POST" class="d-inline">
+                            <form action="{{ route('clientes.destroy', $cliente->id_cliente) }}" method="POST" class="d-inline" data-confirm="¿Está seguro?">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Está seguro?')">
+                                <button type="submit" class="btn btn-sm btn-danger">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>

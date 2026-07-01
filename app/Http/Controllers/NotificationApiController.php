@@ -11,30 +11,17 @@ class NotificationApiController extends Controller
 {
     public function checkLowStock()
     {
-        $materialesStockBajo = Material::where(function ($query) {
+        $total = 0;
+        Material::where(function ($query) {
             $query->where('estado', 'INACTIVO')
                 ->orWhereRaw('stock_actual < stock_minimo');
-        })->get();
-
-        $usuarios = Usuario::where('rol', 'administrador')
-            ->orWhere('rol', 'vendedor')
-            ->get();
-
-        $creados = 0;
-        foreach ($materialesStockBajo as $material) {
-            foreach ($usuarios as $usuario) {
-                Notificacion::create([
-                    'usuario_id' => $usuario->id_usuario,
-                    'tipo' => 'stock_bajo',
-                    'titulo' => 'Alerta de Stock Bajo',
-                    'mensaje' => "El material '{$material->nombre_material}' ({$material->stock_actual} unidades) tiene stock por debajo del mínimo ({$material->stock_minimo} unidades).",
-                    'relacionable_type' => Material::class,
-                    'relacionable_id' => $material->id_material,
-                ]);
-                $creados++;
+        })->chunk(50, function ($materiales) use (&$total) {
+            foreach ($materiales as $material) {
+                $material->notificarSiStockBajo();
+                $total++;
             }
-        }
+        });
 
-        return response()->json(['creados' => $creados, 'total' => $materialesStockBajo->count()]);
+        return response()->json(['creados' => $total]);
     }
 }

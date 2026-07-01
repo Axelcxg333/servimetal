@@ -32,12 +32,21 @@ class SalidaController extends Controller
         ]);
 
         $data = $request->all();
+        $material = Material::findOrFail($data['id_material']);
+
+        if ($data['cantidad'] > $material->stock_actual) {
+            return redirect()->back()->withInput()->withErrors([
+                'cantidad' => "La cantidad no puede superar el stock disponible ({$material->stock_actual})."
+            ]);
+        }
+
         $data['tipo_movimiento'] = 'SALIDA';
         MovimientoInventario::create($data);
 
-        $material = Material::find($data['id_material']);
-        $material->stock_actual = max(0, $material->stock_actual - $data['cantidad']);
+        $material->stock_actual -= $data['cantidad'];
         $material->save();
+
+        $material->notificarSiStockBajo();
 
         return redirect()->route('salidas.index')->with('success', 'Salida registrada correctamente');
     }

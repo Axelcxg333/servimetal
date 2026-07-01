@@ -84,7 +84,7 @@
                             </span>
                         </td>
                         <td>
-                            <form action="{{ route('proveedores.destroy', $p->id_proveedor) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Eliminar proveedor?')">
+                            <form action="{{ route('proveedores.destroy', $p->id_proveedor) }}" method="POST" class="d-inline" data-confirm="¿Eliminar proveedor?">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="btn btn-link p-0 text-danger"><i class="fas fa-trash"></i></button>
                             </form>

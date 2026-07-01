@@ -239,6 +239,8 @@
             transition: opacity .2s ease;
         }
         .sidebar-backdrop.show { display: block; opacity: 1; }
+
+        .modal-content { border-radius: 12px; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
     </style>
     @yield('css')
 </head>
@@ -289,6 +291,11 @@
                 <li>
                     <a href="{{ route('reportes.index') }}" class="{{ request()->routeIs('reportes.*') ? 'active' : '' }}">
                         <i class="fas fa-chart-bar"></i> Reportes
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('notificaciones.panel') }}" class="{{ request()->routeIs('notificaciones.panel') ? 'active' : '' }}">
+                        <i class="fas fa-bell"></i> Notificaciones
                     </a>
                 </li>
 
@@ -351,7 +358,7 @@
                                 <div class="text-center text-muted py-4">Cargando...</div>
                             </div>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item text-center text-primary" href="#" id="viewAllNotifications">Ver todas</a>
+                            <a class="dropdown-item text-center text-primary" href="{{ route('notificaciones.panel') }}" id="viewAllNotifications">Ver todas</a>
                         </div>
                     </div>
                     @php
@@ -480,7 +487,6 @@
         const notificationList = document.getElementById('notificationList');
         const notificationBadge = document.getElementById('notificationBadge');
         const markAllReadBtn = document.getElementById('markAllReadBtn');
-        const viewAllNotifications = document.getElementById('viewAllNotifications');
 
         let notificationInterval;
 
@@ -497,25 +503,8 @@
                         notificationBadge.style.display = 'none';
                         markAllReadBtn.style.display = 'none';
                     }
-
-                    data.notificaciones.forEach(notif => {
-                        if (!notif.leida) {
-                            const nuevo = new NotificationApi({
-                                title: notif.titulo,
-                                body: notif.mensaje,
-                                icon: '{{ asset('storage/app/public/favicon.png') }}',
-                                tag: 'stock-alert-' + notif.id_notificacion,
-                                data: {
-                                    url: null
-                                },
-                                requireInteraction: true,
-                                silent: true
-                            });
-                        }
-                    });
                 })
-                .catch(error => {
-                    console.error('Error fetching notifications:', error);
+                .catch(() => {
                     notificationList.innerHTML = '<div class="text-center text-muted py-4">Error al cargar notificaciones</div>';
                 });
         }
@@ -568,13 +557,6 @@
             });
         }
 
-        function checkLowStockAndCreateNotifications() {
-            fetch('/api/check-low-stock')
-                .then(response => response.json())
-                .then(data => {})
-                .catch(() => {});
-        }
-
         if (notificationToggle) {
             notificationToggle.addEventListener('click', function(e) {
                 if (!notificationList.classList.contains('show')) {
@@ -603,13 +585,6 @@
             });
         }
 
-        if (viewAllNotifications) {
-            viewAllNotifications.addEventListener('click', function(e) {
-                e.preventDefault();
-                window.location.href = '{{ route('materiales.index') }}#alertas';
-            });
-        }
-
         if (notificationToggle && !notificationToggle.closest('a')) {
             const dropdown = notificationToggle.closest('.dropdown');
             if (dropdown) {
@@ -631,11 +606,65 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             fetchNotifications();
-            checkLowStockAndCreateNotifications();
             notificationInterval = setInterval(fetchNotifications, 60000);
-            notificationInterval = setInterval(checkLowStockAndCreateNotifications, 300000);
         });
 </script>
+
+    <!-- Modal global de confirmación -->
+    <div class="modal fade" id="confirmModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h6 class="modal-title fw-bold"><i class="fas fa-exclamation-triangle text-warning me-2"></i>Confirmar</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body py-3" id="confirmModalMessage">¿Está seguro?</div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn-c-light" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn-c-primary" id="confirmModalBtn">Sí, eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        var confirmForm = null;
+        var modalEl = document.getElementById('confirmModal');
+        var modalMsg = document.getElementById('confirmModalMessage');
+        var modalBtn = document.getElementById('confirmModalBtn');
+        var modal = modalEl ? new bootstrap.Modal(modalEl) : null;
+
+        document.addEventListener('submit', function(e) {
+            var form = e.target;
+            var msg = form.getAttribute('data-confirm');
+            if (msg) {
+                e.preventDefault();
+                confirmForm = form;
+                modalMsg.textContent = msg;
+                modal && modal.show();
+            }
+        });
+
+        if (modalBtn) {
+            modalBtn.addEventListener('click', function() {
+                if (confirmForm) {
+                    modal && modal.hide();
+                    confirmForm.removeAttribute('data-confirm');
+                    confirmForm.submit();
+                    confirmForm = null;
+                }
+            });
+        }
+
+        if (modalEl) {
+            modalEl.addEventListener('hidden.bs.modal', function() {
+                confirmForm = null;
+            });
+        }
+    })();
+    </script>
+
     @yield('js')
 </body>
 </html>

@@ -85,7 +85,7 @@
                                 <td>
                                     <a href="{{ route('categorias.edit', $c->id_categoria) }}" class="text-primary me-2" title="Editar"><i class="fas fa-pen"></i></a>
                                     @if($c->materiales_count == 0)
-                                        <form action="{{ route('categorias.destroy', $c->id_categoria) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Eliminar categoría?')">
+                                        <form action="{{ route('categorias.destroy', $c->id_categoria) }}" method="POST" class="d-inline" data-confirm="¿Eliminar categoría?">
                                             @csrf @method('DELETE')
                                             <button type="submit" class="btn btn-link p-0 text-danger" title="Eliminar"><i class="fas fa-trash"></i></button>
                                         </form>

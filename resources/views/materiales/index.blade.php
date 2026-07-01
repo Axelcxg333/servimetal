@@ -131,7 +131,7 @@
                                 <td><span class="{{ $cls }}">{{ $estado }}</span></td>
                                 <td>
                                     <a href="{{ route('materiales.edit', $m->id_material) }}" class="text-primary me-2" title="Editar"><i class="fas fa-pen"></i></a>
-                                    <form action="{{ route('materiales.destroy', $m->id_material) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Eliminar material?')">
+                                    <form action="{{ route('materiales.destroy', $m->id_material) }}" method="POST" class="d-inline" data-confirm="¿Eliminar material?">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="btn btn-link p-0 text-danger" title="Eliminar"><i class="fas fa-trash"></i></button>
                                     </form>

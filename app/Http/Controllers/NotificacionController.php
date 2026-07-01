@@ -31,6 +31,32 @@ class NotificacionController extends Controller
         ]);
     }
 
+    public function indexView(Request $request)
+    {
+        $userId = session('usuario_id');
+        if (!$userId) {
+            return redirect()->route('login');
+        }
+
+        $tipo = $request->get('tipo', '');
+        $query = Notificacion::where('usuario_id', $userId)->latest();
+
+        if ($tipo) {
+            $query->where('tipo', $tipo);
+        }
+
+        $notificaciones = $query->paginate(15);
+
+        $noLeidasCount = Notificacion::where('usuario_id', $userId)->where('leida', false)->count();
+
+        $tipos = Notificacion::where('usuario_id', $userId)
+            ->select('tipo')
+            ->distinct()
+            ->pluck('tipo');
+
+        return view('notificaciones.index', compact('notificaciones', 'noLeidasCount', 'tipos', 'tipo'));
+    }
+
     public function marcarLeida(Notificacion $notificacion)
     {
         $userId = session('usuario_id');
@@ -57,5 +83,18 @@ class NotificacionController extends Controller
             ->update(['leida' => true, 'leida_en' => now()]);
 
         return response()->json(['success' => true]);
+    }
+
+    public function eliminar(Notificacion $notificacion)
+    {
+        $userId = session('usuario_id');
+
+        if ($notificacion->usuario_id !== $userId) {
+            return response()->json(['error' => 'No autorizado'], 403);
+        }
+
+        $notificacion->delete();
+
+        return redirect()->route('notificaciones.panel')->with('success', 'Notificación eliminada.');
     }
 }

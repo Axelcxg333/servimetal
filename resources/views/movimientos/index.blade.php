@@ -21,9 +21,9 @@
                         <td>{{ $mov->fecha_movimiento->format('d/m/Y H:i') }}</td>
                         <td>{{ $mov->usuario->nombres }}</td>
                         <td>
-                            <form action="{{ route('movimientos.destroy', $mov->id_movimiento) }}" method="POST" class="d-inline">
+                            <form action="{{ route('movimientos.destroy', $mov->id_movimiento) }}" method="POST" class="d-inline" data-confirm="¿Está seguro?">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Está seguro?')"><i class="fas fa-trash"></i></button>
+                                <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
                             </form>
                         </td>
                     </tr>

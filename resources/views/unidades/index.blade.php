@@ -73,7 +73,7 @@
                                 </td>
                                 <td>
                                     <a href="{{ route('unidades.edit', $u->id_unidad) }}" class="text-primary me-2" title="Editar"><i class="fas fa-pen"></i></a>
-                                    <form action="{{ route('unidades.destroy', $u->id_unidad) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Eliminar unidad de medida?')">
+                                    <form action="{{ route('unidades.destroy', $u->id_unidad) }}" method="POST" class="d-inline" data-confirm="¿Eliminar unidad de medida?">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="btn btn-link p-0 text-danger" title="Eliminar"><i class="fas fa-trash"></i></button>
                                     </form>

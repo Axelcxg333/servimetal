@@ -20,9 +20,9 @@
                         <td><span class="badge {{ $servicio->estado === 'ACTIVO' ? 'bg-success' : 'bg-danger' }}">{{ $servicio->estado }}</span></td>
                         <td>
                             <a href="{{ route('servicios.edit', $servicio->id_servicio) }}" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>
-                            <form action="{{ route('servicios.destroy', $servicio->id_servicio) }}" method="POST" class="d-inline">
+                            <form action="{{ route('servicios.destroy', $servicio->id_servicio) }}" method="POST" class="d-inline" data-confirm="¿Está seguro?">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Está seguro?')"><i class="fas fa-trash"></i></button>
+                                <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
                             </form>
                         </td>
                     </tr>
