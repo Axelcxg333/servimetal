@@ -6,10 +6,6 @@
 </div>
 <div class="breadcrumb-c mb-4">Configuración <span class="mx-1">›</span> <span class="active">Roles y Accesos</span></div>
 
-@if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show">{{ session('success') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
-@endif
-
 <div class="row g-3">
     <div class="col-lg-3">
         <div class="card-c">
@@ -34,6 +30,7 @@
             </div>
             <form action="{{ route('permisos.update') }}" method="POST">
                 @csrf
+                @method('PUT')
                 <input type="hidden" name="id_rol" value="{{ $selectedRol->id_rol }}">
                 @foreach($permisos as $grupo => $items)
                 <div class="mb-3">

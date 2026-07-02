@@ -318,9 +318,9 @@
 
                 <!-- Mantenimiento (desplegable) -->
                 @php
-                    $maintRoute = request()->routeIs('categorias.*') || request()->routeIs('unidades.*') || request()->routeIs('roles.*') || request()->routeIs('permisos.*');
+                    $maintRoute = request()->routeIs('categorias.*') || request()->routeIs('unidades.*') || request()->routeIs('roles.*') || request()->routeIs('permisos.*') || request()->routeIs('servicios.*');
                 @endphp
-                @if(tieneAcceso('categorias') || tieneAcceso('unidades') || tieneAcceso('roles'))
+                @if(tieneAcceso('categorias') || tieneAcceso('unidades') || tieneAcceso('roles') || tieneAcceso('servicios'))
                 <li class="sidebar-submenu">
                     <a href="#" class="submenu-toggle {{ $maintRoute ? 'active' : '' }}" onclick="toggleMaint(event)">
                         <i class="fas fa-wrench"></i> Mantenimiento
@@ -338,6 +338,13 @@
                         <li>
                             <a href="{{ route('unidades.index') }}" class="{{ request()->routeIs('unidades.*') ? 'active' : '' }}">
                                 <i class="fas fa-ruler"></i> Unidades de medida
+                            </a>
+                        </li>
+                        @endif
+                        @if(tieneAcceso('servicios'))
+                        <li>
+                            <a href="{{ route('servicios.index') }}" class="{{ request()->routeIs('servicios.*') ? 'active' : '' }}">
+                                <i class="fas fa-concierge-bell"></i> Servicios
                             </a>
                         </li>
                         @endif

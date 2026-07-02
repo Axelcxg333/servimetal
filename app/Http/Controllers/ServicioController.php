@@ -41,7 +41,8 @@ class ServicioController extends Controller
     public function edit(string $id)
     {
         $servicio = Servicio::findOrFail($id);
-        return view('servicios.edit', compact('servicio'));
+        $servicios = Servicio::all();
+        return view('servicios.index', compact('servicios', 'servicio'));
     }
 
     public function update(Request $request, string $id)

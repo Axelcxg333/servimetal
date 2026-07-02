@@ -16,6 +16,5 @@ class Configuracion extends Model
         'telefono',
         'correo',
         'direccion',
-        'stock_min_global',
     ];
 }

@@ -32,10 +32,6 @@
                 <label class="form-label-c">Dirección</label>
                 <input type="text" name="direccion" class="form-control-c" value="{{ old('direccion', $cfg->direccion) }}">
             </div>
-            <div class="col-md-6">
-                <label class="form-label-c">Stock mínimo global *</label>
-                <input type="number" step="0.01" min="0" name="stock_min_global" class="form-control-c" value="{{ old('stock_min_global', $cfg->stock_min_global) }}" required>
-            </div>
         </div>
         <div class="d-flex justify-content-end gap-2 mt-3">
             <button type="submit" class="btn-c-primary"><i class="fas fa-save me-1"></i> Guardar cambios</button>
