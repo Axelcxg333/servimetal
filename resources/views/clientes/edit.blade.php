@@ -1,70 +1,43 @@
 @extends('layouts.admin')
-
-@section('title', 'Editar Cliente - SERVIMETAL')
-
+@section('title', 'Editar Cliente')
 @section('content')
-<div class="row mb-4">
-    <div class="col-md-8">
-        <h1>Editar Cliente</h1>
-    </div>
-    <div class="col-md-4 text-end">
-        <a href="{{ route('clientes.index') }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Volver
-        </a>
-    </div>
+<div class="d-flex justify-content-between align-items-center mb-1">
+    <h1 class="page-title">Editar cliente</h1>
+    <a href="{{ route('clientes.index') }}" class="btn-c-light"><i class="fas fa-arrow-left me-1"></i> Volver</a>
 </div>
+<div class="breadcrumb-c mb-4"><a href="{{ route('clientes.index') }}">Clientes</a> <span class="mx-1">›</span> <span class="active">{{ $cliente->nombre_razon_social }}</span></div>
 
-<div class="card">
-    <div class="card-body">
-        <form action="{{ route('clientes.update', $cliente->id_cliente) }}" method="POST">
-            @csrf
-            @method('PUT')
-
-            <div class="mb-3">
-                <label for="nombre_razon_social" class="form-label">Razón Social / Nombre *</label>
-                <input type="text" class="form-control @error('nombre_razon_social') is-invalid @enderror" 
-                       id="nombre_razon_social" name="nombre_razon_social" value="{{ old('nombre_razon_social', $cliente->nombre_razon_social) }}" required>
-                @error('nombre_razon_social') <div class="invalid-feedback">{{ $message }}</div> @enderror
+<div class="card-c">
+    <form action="{{ route('clientes.update', $cliente->id_cliente) }}" method="POST">
+        @csrf @method('PUT')
+        <div class="row g-2">
+            <div class="col-md-8">
+                <label class="form-label-c">Razón Social / Nombre *</label>
+                <input type="text" name="nombre_razon_social" class="form-control-c" value="{{ old('nombre_razon_social', $cliente->nombre_razon_social) }}" required>
+                @error('nombre_razon_social') <div class="text-danger small">{{ $message }}</div> @enderror
             </div>
-
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label for="ruc_dni" class="form-label">RUC / DNI *</label>
-                    <input type="text" class="form-control @error('ruc_dni') is-invalid @enderror" 
-                           id="ruc_dni" name="ruc_dni" value="{{ old('ruc_dni', $cliente->ruc_dni) }}" required>
-                    @error('ruc_dni') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label for="telefono" class="form-label">Teléfono</label>
-                    <input type="text" class="form-control @error('telefono') is-invalid @enderror" 
-                           id="telefono" name="telefono" value="{{ old('telefono', $cliente->telefono) }}">
-                    @error('telefono') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
+            <div class="col-md-4">
+                <label class="form-label-c">RUC / DNI *</label>
+                <input type="text" name="ruc_dni" class="form-control-c" value="{{ old('ruc_dni', $cliente->ruc_dni) }}" required>
+                @error('ruc_dni') <div class="text-danger small">{{ $message }}</div> @enderror
             </div>
-
-            <div class="mb-3">
-                <label for="correo" class="form-label">Correo Electrónico</label>
-                <input type="email" class="form-control @error('correo') is-invalid @enderror" 
-                       id="correo" name="correo" value="{{ old('correo', $cliente->correo) }}">
-                @error('correo') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            <div class="col-md-4">
+                <label class="form-label-c">Teléfono</label>
+                <input type="text" name="telefono" class="form-control-c" value="{{ old('telefono', $cliente->telefono) }}">
             </div>
-
-            <div class="mb-3">
-                <label for="direccion" class="form-label">Dirección</label>
-                <input type="text" class="form-control @error('direccion') is-invalid @enderror" 
-                       id="direccion" name="direccion" value="{{ old('direccion', $cliente->direccion) }}">
-                @error('direccion') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            <div class="col-md-4">
+                <label class="form-label-c">Correo</label>
+                <input type="email" name="correo" class="form-control-c" value="{{ old('correo', $cliente->correo) }}">
             </div>
-
-            <hr>
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save"></i> Actualizar Cliente
-            </button>
-            <a href="{{ route('clientes.index') }}" class="btn btn-secondary">
-                <i class="fas fa-times"></i> Cancelar
-            </a>
-        </form>
-    </div>
+            <div class="col-md-4">
+                <label class="form-label-c">Dirección</label>
+                <input type="text" name="direccion" class="form-control-c" value="{{ old('direccion', $cliente->direccion) }}">
+            </div>
+        </div>
+        <div class="d-flex justify-content-end gap-2 mt-3">
+            <a href="{{ route('clientes.index') }}" class="btn-c-light">Cancelar</a>
+            <button type="submit" class="btn-c-primary">Actualizar cliente</button>
+        </div>
+    </form>
 </div>
 @endsection

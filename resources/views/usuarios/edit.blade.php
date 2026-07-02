@@ -1,7 +1,5 @@
 @extends('layouts.admin')
-
 @section('title', 'Editar Usuario')
-
 @section('content')
 <h1 class="page-title">Editar Usuario</h1>
 <div class="breadcrumb-c mb-4"><a href="{{ route('usuarios.index') }}">Usuarios</a> <span class="mx-1">›</span> <span class="active">Editar</span></div>
@@ -9,8 +7,7 @@
 <div class="card-c" style="max-width: 760px;">
     <h6 class="fw-bold mb-3">Datos del usuario</h6>
     <form action="{{ route('usuarios.update', $usuario->id_usuario) }}" method="POST">
-        @csrf
-        @method('PUT')
+        @csrf @method('PUT')
         <div class="row g-2">
             <div class="col-md-6">
                 <label class="form-label-c">Nombres *</label>
@@ -31,9 +28,11 @@
             </div>
             <div class="col-md-3">
                 <label class="form-label-c">Rol *</label>
-                <select name="rol" class="form-select-c" required>
-                    <option value="ADMINISTRADOR" {{ old('rol', $usuario->rol) === 'ADMINISTRADOR' ? 'selected' : '' }}>Administrador</option>
-                    <option value="TECNICO"      {{ old('rol', $usuario->rol) === 'TECNICO' ? 'selected' : '' }}>Técnico</option>
+                <select name="id_rol" class="form-select-c" required>
+                    <option value="">Seleccionar</option>
+                    @foreach($roles as $r)
+                        <option value="{{ $r->id_rol }}" {{ old('id_rol', $usuario->id_rol) == $r->id_rol ? 'selected' : '' }}>{{ $r->nombre_rol }}</option>
+                    @endforeach
                 </select>
             </div>
             <div class="col-md-3">

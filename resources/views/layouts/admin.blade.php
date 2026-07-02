@@ -259,79 +259,125 @@
 
             <ul class="sidebar-nav">
                 <li>
+                @if(tieneAcceso('dashboard'))
+                <li>
                     <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
                         <i class="fas fa-th-large"></i> Dashboard
                     </a>
                 </li>
+                @endif
+                @if(tieneAcceso('materiales'))
                 <li>
                     <a href="{{ route('materiales.index') }}" class="{{ request()->routeIs('materiales.*') ? 'active' : '' }}">
                         <i class="fas fa-boxes-stacked"></i> Materiales
                     </a>
                 </li>
+                @endif
+                @if(tieneAcceso('entradas'))
                 <li>
                     <a href="{{ route('entradas.index') }}" class="{{ request()->routeIs('entradas.*') ? 'active' : '' }}">
                         <i class="fas fa-sign-in-alt"></i> Entradas
                     </a>
                 </li>
+                @endif
+                @if(tieneAcceso('salidas'))
                 <li>
                     <a href="{{ route('salidas.index') }}" class="{{ request()->routeIs('salidas.*') ? 'active' : '' }}">
                         <i class="fas fa-sign-out-alt"></i> Salidas
                     </a>
                 </li>
+                @endif
+                @if(tieneAcceso('solicitudes'))
                 <li>
                     <a href="{{ route('solicitudes.index') }}" class="{{ request()->routeIs('solicitudes.*') ? 'active' : '' }}">
                         <i class="fas fa-clipboard-list"></i> Solicitudes
                     </a>
                 </li>
+                @endif
+                @if(tieneAcceso('proveedores'))
                 <li>
                     <a href="{{ route('proveedores.index') }}" class="{{ request()->routeIs('proveedores.*') ? 'active' : '' }}">
                         <i class="fas fa-truck"></i> Proveedores
                     </a>
                 </li>
+                @endif
+                @if(tieneAcceso('reportes'))
                 <li>
                     <a href="{{ route('reportes.index') }}" class="{{ request()->routeIs('reportes.*') ? 'active' : '' }}">
                         <i class="fas fa-chart-bar"></i> Reportes
                     </a>
                 </li>
+                @endif
+                @if(tieneAcceso('notificaciones'))
                 <li>
                     <a href="{{ route('notificaciones.panel') }}" class="{{ request()->routeIs('notificaciones.panel') ? 'active' : '' }}">
                         <i class="fas fa-bell"></i> Notificaciones
                     </a>
                 </li>
+                @endif
 
                 <!-- Mantenimiento (desplegable) -->
                 @php
-                    $maintRoute = request()->routeIs('categorias.*') || request()->routeIs('unidades.*');
+                    $maintRoute = request()->routeIs('categorias.*') || request()->routeIs('unidades.*') || request()->routeIs('roles.*') || request()->routeIs('permisos.*');
                 @endphp
+                @if(tieneAcceso('categorias') || tieneAcceso('unidades') || tieneAcceso('roles'))
                 <li class="sidebar-submenu">
                     <a href="#" class="submenu-toggle {{ $maintRoute ? 'active' : '' }}" onclick="toggleMaint(event)">
                         <i class="fas fa-wrench"></i> Mantenimiento
                         <i class="fas fa-chevron-down ms-auto submenu-arrow" id="maintArrow" style="font-size:.7rem;"></i>
                     </a>
                     <ul class="submenu-list" id="maintSubmenu" @if(!$maintRoute) style="display:none;" @endif>
+                        @if(tieneAcceso('categorias'))
                         <li>
                             <a href="{{ route('categorias.index') }}" class="{{ request()->routeIs('categorias.*') ? 'active' : '' }}">
                                 <i class="fas fa-tags"></i> Categorías
                             </a>
                         </li>
+                        @endif
+                        @if(tieneAcceso('unidades'))
                         <li>
                             <a href="{{ route('unidades.index') }}" class="{{ request()->routeIs('unidades.*') ? 'active' : '' }}">
                                 <i class="fas fa-ruler"></i> Unidades de medida
                             </a>
                         </li>
+                        @endif
+                        @if(tieneAcceso('roles'))
+                        <li>
+                            <a href="{{ route('roles.index') }}" class="{{ request()->routeIs('roles.*') ? 'active' : '' }}">
+                                <i class="fas fa-user-tag"></i> Roles
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('permisos.index') }}" class="{{ request()->routeIs('permisos.*') ? 'active' : '' }}">
+                                <i class="fas fa-shield-alt"></i> Accesos
+                            </a>
+                        </li>
+                        @endif
                     </ul>
                 </li>
+                @endif
 
+                @if(tieneAcceso('usuarios'))
                 <li>
                     <a href="{{ route('usuarios.index') }}" class="{{ request()->routeIs('usuarios.*') ? 'active' : '' }}">
                         <i class="fas fa-users-cog"></i> Usuarios
                     </a>
                 </li>
+                @endif
+                @if(tieneAcceso('clientes'))
+                <li>
+                    <a href="{{ route('clientes.index') }}" class="{{ request()->routeIs('clientes.*') ? 'active' : '' }}">
+                        <i class="fas fa-handshake"></i> Clientes
+                    </a>
+                </li>
+                @endif
+                @if(tieneAcceso('configuracion'))
                 <li>
                     <a href="{{ route('configuracion.index') }}" class="{{ request()->routeIs('configuracion.*') ? 'active' : '' }}">
                         <i class="fas fa-cog"></i> Configuración
                     </a>
                 </li>
+                @endif
             </ul>
         </aside>
 
@@ -362,15 +408,16 @@
                         </div>
                     </div>
                     @php
-                        $sessionUser = null;
+                        $sessionUser  = null;
                         if (Session::has('usuario_id')) {
-                            $sessionUser = \App\Models\Usuario::find(Session::get('usuario_id'));
+                            $sessionUser = \App\Models\Usuario::with('rol')->find(Session::get('usuario_id'));
                         }
                         $displayName  = $sessionUser ? trim($sessionUser->nombres . ' ' . $sessionUser->apellidos) : 'Invitado';
                         $initials     = $sessionUser
                             ? strtoupper(mb_substr($sessionUser->nombres, 0, 1) . mb_substr($sessionUser->apellidos, 0, 1))
                             : '?';
-                        $userRole     = $sessionUser->rol ?? '';
+                        $userRole     = $sessionUser->rol->nombre_rol ?? '';
+                        $userRoleColor = $sessionUser->rol->color ?? '#6c757d';
                     @endphp
                     <div class="dropdown">
                         <div class="user-chip dropdown-toggle" data-bs-toggle="dropdown">
@@ -379,7 +426,7 @@
                             <i class="fas fa-chevron-down small text-muted"></i>
                         </div>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><h6 class="dropdown-header">{{ $displayName }}<br><small class="text-muted">{{ $userRole }}</small></h6></li>
+                            <li><h6 class="dropdown-header">{{ $displayName }}<br><small class="text-muted"><span style="background:{{ $userRoleColor }};color:#fff;padding:.1rem .5rem;border-radius:20px;font-size:.75rem">{{ $userRole }}</span></small></h6></li>
                             <li><a class="dropdown-item" href="{{ route('perfil.index') }}"><i class="fas fa-user me-2"></i>Mi perfil</a></li>
                             <li><a class="dropdown-item" href="{{ route('configuracion.index') }}"><i class="fas fa-cog me-2"></i>Configuración</a></li>
                             <li><hr class="dropdown-divider"></li>

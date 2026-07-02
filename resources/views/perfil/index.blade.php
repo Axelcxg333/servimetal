@@ -21,7 +21,7 @@
             <div class="text-start small">
                 <div class="d-flex justify-content-between mb-2">
                     <span class="text-muted">Rol</span>
-                    <span class="{{ $user->rol === 'ADMINISTRADOR' ? 'badge-soft-danger' : 'badge-soft-info' }}">{{ $user->rol }}</span>
+                    <span style="background:{{ $user->rol->color ?? '#6c757d' }};color:#fff;padding:.1rem .5rem;border-radius:20px;font-size:.8rem">{{ $user->rol->nombre_rol ?? $user->rol }}</span>
                 </div>
                 <div class="d-flex justify-content-between mb-2">
                     <span class="text-muted">Estado</span>

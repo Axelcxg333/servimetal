@@ -15,8 +15,6 @@ class SolicitudServicio extends Model
         'id_cliente',
         'id_servicio',
         'id_usuario',
-        'solicitante',
-        'area_empresa',
         'fecha_solicitud',
         'fecha_requerida',
         'detalle',

@@ -33,24 +33,12 @@
                     </div>
 
                     <div class="col-12">
-                        <label class="form-label-c">Solicitante *</label>
+                        <label class="form-label-c">Cliente *</label>
                         <select name="id_cliente" class="form-select-c" required>
-                            <option value="">Seleccione solicitante</option>
+                            <option value="">Seleccione cliente</option>
                             @foreach($clientes as $c)
                                 <option value="{{ $c->id_cliente }}" {{ old('id_cliente') == $c->id_cliente ? 'selected' : '' }}>{{ $c->nombre_razon_social }}</option>
                             @endforeach
-                        </select>
-                    </div>
-
-                    <div class="col-12">
-                        <label class="form-label-c">Área / Empresa *</label>
-                        <select name="area_empresa" class="form-select-c" required>
-                            <option value="">Seleccione área / empresa</option>
-                            <option value="Producción"      {{ old('area_empresa') == 'Producción' ? 'selected' : '' }}>Producción</option>
-                            <option value="Almacén"         {{ old('area_empresa') == 'Almacén' ? 'selected' : '' }}>Almacén</option>
-                            <option value="Logística"       {{ old('area_empresa') == 'Logística' ? 'selected' : '' }}>Logística</option>
-                            <option value="Mantenimiento"   {{ old('area_empresa') == 'Mantenimiento' ? 'selected' : '' }}>Mantenimiento</option>
-                            <option value="Administración"  {{ old('area_empresa') == 'Administración' ? 'selected' : '' }}>Administración</option>
                         </select>
                     </div>
 
@@ -108,10 +96,11 @@
                         <tr>
                             <th>N° Solicitud</th>
                             <th>Fecha</th>
-                            <th>Solicitante</th>
-                            <th>Tipo de Servicio</th>
+                            <th>Cliente</th>
+                            <th>Servicio</th>
                             <th>Prioridad</th>
                             <th>Estado</th>
+                            <th>Registrado por</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -132,20 +121,36 @@
                                     'BAJA'  => 'Baja',
                                     default => $s->prioridad,
                                 };
+                                $proxEst = match($s->estado) {
+                                    'PENDIENTE'  => 'EN_PROCESO',
+                                    'EN_PROCESO' => 'FINALIZADO',
+                                    default      => null,
+                                };
                             @endphp
                             <tr>
                                 <td>SOL-{{ str_pad($s->id_solicitud, 4, '0', STR_PAD_LEFT) }}</td>
                                 <td>{{ optional($s->fecha_solicitud)->format('d/m/Y') }}</td>
-                                <td>{{ $s->cliente->nombre_razon_social ?? ($s->solicitante ?? '-') }}</td>
+                                <td>{{ $s->cliente->nombre_razon_social ?? '-' }}</td>
                                 <td>{{ $s->servicio->nombre_servicio ?? '-' }}</td>
                                 <td>{{ $prio }}</td>
                                 <td><span class="{{ $est[1] }}">{{ $est[0] }}</span></td>
-                                <td>
+                                <td class="small text-muted">{{ $s->usuario->nombres ?? '-' }}</td>
+                                <td class="d-flex gap-1">
                                     <a href="{{ route('solicitudes.show', $s->id_solicitud) }}" class="text-info" title="Ver"><i class="fas fa-eye"></i></a>
+                                    @if($proxEst)
+                                    <form action="{{ route('solicitudes.cambiarEstado', $s->id_solicitud) }}" method="POST" class="d-inline">
+                                        @csrf @method('PUT')
+                                        <input type="hidden" name="estado" value="{{ $proxEst }}">
+                                        <button type="submit" class="btn btn-sm btn-link p-0 text-success" title="Avanzar a {{ $proxEst === 'EN_PROCESO' ? 'En Proceso' : 'Finalizado' }}">
+                                            <i class="fas fa-arrow-right"></i>
+                                        </button>
+                                    </form>
+                                    @endif
+                                    <a href="{{ route('solicitudes.edit', $s->id_solicitud) }}" class="text-primary" title="Editar"><i class="fas fa-pen"></i></a>
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="7" class="text-center text-muted py-4">Sin solicitudes registradas</td></tr>
+                            <tr><td colspan="8" class="text-center text-muted py-4">Sin solicitudes registradas</td></tr>
                         @endforelse
                     </tbody>
                 </table>

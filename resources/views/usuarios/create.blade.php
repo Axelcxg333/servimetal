@@ -1,7 +1,5 @@
 @extends('layouts.admin')
-
 @section('title', 'Crear Usuario')
-
 @section('content')
 <h1 class="page-title">Crear Nuevo Usuario</h1>
 <div class="breadcrumb-c mb-4"><a href="{{ route('usuarios.index') }}">Usuarios</a> <span class="mx-1">›</span> <span class="active">Crear</span></div>
@@ -30,10 +28,11 @@
             </div>
             <div class="col-md-3">
                 <label class="form-label-c">Rol *</label>
-                <select name="rol" class="form-select-c" required>
+                <select name="id_rol" class="form-select-c" required>
                     <option value="">Seleccionar</option>
-                    <option value="ADMINISTRADOR" {{ old('rol') === 'ADMINISTRADOR' ? 'selected' : '' }}>Administrador</option>
-                    <option value="TECNICO"      {{ old('rol') === 'TECNICO' ? 'selected' : '' }}>Técnico</option>
+                    @foreach($roles as $r)
+                        <option value="{{ $r->id_rol }}" {{ old('id_rol') == $r->id_rol ? 'selected' : '' }}>{{ $r->nombre_rol }}</option>
+                    @endforeach
                 </select>
             </div>
             <div class="col-md-3">

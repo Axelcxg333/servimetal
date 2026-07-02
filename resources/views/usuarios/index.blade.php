@@ -1,13 +1,9 @@
 @extends('layouts.admin')
-
 @section('title', 'Usuarios')
-
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-1">
     <h1 class="page-title">Gestión de usuarios</h1>
-    <a href="{{ route('usuarios.create') }}" class="btn-c-primary">
-        <i class="fas fa-plus me-1"></i> Nuevo usuario
-    </a>
+    <a href="{{ route('usuarios.create') }}" class="btn-c-primary"><i class="fas fa-plus me-1"></i> Nuevo usuario</a>
 </div>
 <div class="breadcrumb-c mb-4">Usuarios <span class="mx-1">›</span> <span class="active">Listado</span></div>
 
@@ -16,15 +12,7 @@
     <div class="table-responsive">
         <table class="table-c">
             <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nombres</th>
-                    <th>Apellidos</th>
-                    <th>Correo</th>
-                    <th>Rol</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
+                <tr><th>ID</th><th>Nombres</th><th>Apellidos</th><th>Correo</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr>
             </thead>
             <tbody>
                 @forelse($usuarios as $u)
@@ -33,11 +21,7 @@
                         <td>{{ $u->nombres }}</td>
                         <td>{{ $u->apellidos }}</td>
                         <td>{{ $u->correo }}</td>
-                        <td>
-                            <span class="{{ $u->rol === 'ADMINISTRADOR' ? 'badge-soft-danger' : 'badge-soft-info' }}">
-                                {{ $u->rol }}
-                            </span>
-                        </td>
+                        <td><span style="background:{{ $u->rol->color ?? '#6c757d' }};color:#fff;padding:.2rem .6rem;border-radius:20px;font-size:.8rem">{{ $u->rol->nombre_rol ?? '-' }}</span></td>
                         <td>
                             <span class="{{ $u->estado === 'ACTIVO' ? 'badge-soft-success' : 'badge-soft-danger' }}">
                                 {{ $u->estado }}

@@ -1,58 +1,37 @@
 @extends('layouts.admin')
-
-@section('title', 'Ver Cliente - SERVIMETAL')
-
+@section('title', 'Ver Cliente')
 @section('content')
-<div class="row mb-4">
-    <div class="col-md-8">
-        <h1>Detalle del Cliente</h1>
-    </div>
-    <div class="col-md-4 text-end">
-        <a href="{{ route('clientes.edit', $cliente->id_cliente) }}" class="btn btn-warning">
-            <i class="fas fa-edit"></i> Editar
-        </a>
-        <a href="{{ route('clientes.index') }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Volver
-        </a>
+<div class="d-flex justify-content-between align-items-center mb-1">
+    <h1 class="page-title">Detalle del cliente</h1>
+    <div class="d-flex gap-2">
+        <a href="{{ route('clientes.edit', $cliente->id_cliente) }}" class="btn-c-primary"><i class="fas fa-edit me-1"></i> Editar</a>
+        <a href="{{ route('clientes.index') }}" class="btn-c-light"><i class="fas fa-arrow-left me-1"></i> Volver</a>
     </div>
 </div>
+<div class="breadcrumb-c mb-4"><a href="{{ route('clientes.index') }}">Clientes</a> <span class="mx-1">›</span> <span class="active">{{ $cliente->nombre_razon_social }}</span></div>
 
-<div class="card">
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-8 mb-3">
-                <label class="form-label fw-bold">Razón Social:</label>
-                <p>{{ $cliente->nombre_razon_social }}</p>
-            </div>
-            <div class="col-md-4 mb-3">
-                <label class="form-label fw-bold">RUC/DNI:</label>
-                <p>{{ $cliente->ruc_dni }}</p>
-            </div>
+<div class="card-c">
+    <div class="row g-2">
+        <div class="col-md-6">
+            <label class="form-label-c text-muted">RUC / DNI</label>
+            <p class="fw-semibold fs-6">{{ $cliente->ruc_dni }}</p>
         </div>
-
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label class="form-label fw-bold">Teléfono:</label>
-                <p>{{ $cliente->telefono ?? '-' }}</p>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label fw-bold">Correo:</label>
-                <p>{{ $cliente->correo ?? '-' }}</p>
-            </div>
+        <div class="col-md-6">
+            <label class="form-label-c text-muted">Razón Social</label>
+            <p class="fw-semibold fs-6">{{ $cliente->nombre_razon_social }}</p>
         </div>
-
-        <div class="mb-3">
-            <label class="form-label fw-bold">Dirección:</label>
-            <p>{{ $cliente->direccion ?? '-' }}</p>
+        <div class="col-md-4">
+            <label class="form-label-c text-muted">Teléfono</label>
+            <p class="fw-semibold">{{ $cliente->telefono ?? '-' }}</p>
         </div>
-
-        <hr>
-        <a href="{{ route('clientes.edit', $cliente->id_cliente) }}" class="btn btn-warning">
-            <i class="fas fa-edit"></i> Editar
-        </a>
-        <a href="{{ route('clientes.index') }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Volver
-        </a>
+        <div class="col-md-4">
+            <label class="form-label-c text-muted">Correo</label>
+            <p class="fw-semibold">{{ $cliente->correo ?? '-' }}</p>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label-c text-muted">Dirección</label>
+            <p class="fw-semibold">{{ $cliente->direccion ?? '-' }}</p>
+        </div>
     </div>
 </div>
 @endsection

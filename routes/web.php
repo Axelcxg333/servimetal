@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\PermisoController;
+use App\Http\Controllers\RolController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\CategoriaMaterialController;
@@ -39,12 +41,21 @@ Route::put('/perfil',        [PerfilController::class, 'update'])->name('perfil.
 // ========== ADMINISTRATIVAS ==========
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+Route::get('/roles',           [RolController::class, 'index'])->name('roles.index');
+Route::post('/roles',          [RolController::class, 'store'])->name('roles.store');
+Route::get('/roles/{rol}/edit', [RolController::class, 'edit'])->name('roles.edit');
+Route::put('/roles/{rol}',     [RolController::class, 'update'])->name('roles.update');
+Route::delete('/roles/{rol}',  [RolController::class, 'destroy'])->name('roles.destroy');
+
+Route::get('/accesos',        [PermisoController::class, 'index'])->name('permisos.index');
+Route::put('/accesos',        [PermisoController::class, 'update'])->name('permisos.update');
 Route::resource('usuarios',    UsuarioController::class);
 Route::resource('clientes',    ClienteController::class);
 Route::resource('categorias',  CategoriaMaterialController::class)->except(['create', 'show']);
 Route::resource('materiales',  MaterialController::class);
 Route::resource('servicios',   ServicioController::class);
 Route::resource('solicitudes', SolicitudServicioController::class);
+Route::put('/solicitudes/{solicitud}/estado', [SolicitudServicioController::class, 'cambiarEstado'])->name('solicitudes.cambiarEstado');
 Route::resource('movimientos', MovimientoInventarioController::class);
 
 Route::get('/entradas',  [EntradaController::class, 'index'])->name('entradas.index');

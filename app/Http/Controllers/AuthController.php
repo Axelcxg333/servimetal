@@ -24,7 +24,7 @@ class AuthController extends Controller
             'contrasena' => 'required|string',
         ]);
 
-        $usuario = Usuario::where(function ($q) use ($request) {
+        $usuario = Usuario::with('rol')->where(function ($q) use ($request) {
                 $q->where('correo', $request->usuario)
                   ->orWhere('nombres', $request->usuario);
             })
@@ -48,7 +48,7 @@ class AuthController extends Controller
 
         Session::put('usuario_id',   $usuario->id_usuario);
         Session::put('usuario_nombre', trim($usuario->nombres . ' ' . $usuario->apellidos));
-        Session::put('usuario_rol',  $usuario->rol);
+        Session::put('usuario_rol',  $usuario->rol->nombre_rol ?? $usuario->rol);
 
         return redirect()->intended(route('dashboard'));
     }

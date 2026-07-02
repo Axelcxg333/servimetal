@@ -12,7 +12,7 @@ class PerfilController extends Controller
     public function index()
     {
         $id    = Session::get('usuario_id');
-        $user  = $id ? Usuario::find($id) : null;
+        $user  = $id ? Usuario::with('rol')->find($id) : null;
 
         if (!$user) {
             return redirect()->route('login');
@@ -24,7 +24,7 @@ class PerfilController extends Controller
     public function update(Request $request)
     {
         $id   = Session::get('usuario_id');
-        $user = $id ? Usuario::find($id) : null;
+        $user = $id ? Usuario::with('rol')->find($id) : null;
 
         if (!$user) {
             return redirect()->route('login');

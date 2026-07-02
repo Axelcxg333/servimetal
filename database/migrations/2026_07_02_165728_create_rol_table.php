@@ -1,0 +1,29 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('rol', function (Blueprint $table) {
+            $table->id('id_rol');
+            $table->string('nombre_rol', 50)->unique();
+            $table->string('descripcion', 255)->nullable();
+            $table->timestamps();
+        });
+
+        DB::table('rol')->insert([
+            ['nombre_rol' => 'ADMINISTRADOR', 'descripcion' => 'Acceso total al sistema'],
+            ['nombre_rol' => 'TECNICO',      'descripcion' => 'Acceso a módulos operativos'],
+        ]);
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('rol');
+    }
+};
